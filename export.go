@@ -1,9 +1,9 @@
 package marvel
 
 import (
-	"PT430/marvel/Config"
-	"PT430/marvel/Log"
-	"PT430/marvel/Mysql/Gorm"
+	"marvel/Config"
+	"marvel/Log"
+	"marvel/Mysql/Gorm"
 )
 
 var (
