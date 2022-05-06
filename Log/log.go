@@ -2,7 +2,6 @@ package Log
 
 import (
 	"context"
-	"fmt"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/sirupsen/logrus"
 	"runtime"
@@ -25,7 +24,6 @@ func Initialize(path string, pattern string, options ...rotatelogs.Option) (erro
 		},
 	}
 	formater.CallerPrettyfier = func(frame *runtime.Frame) (function string, file string) {
-		fmt.Println(frame.Line)
 		return frame.Function, frame.File
 	}
 	formater.TimestampFormat = "2006-01-02 15:04:05 Z07:00"
