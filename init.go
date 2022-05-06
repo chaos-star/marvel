@@ -1,9 +1,9 @@
 package marvel
 
 import (
-	"marvel/Config"
-	"marvel/Log"
-	"marvel/Mysql/Gorm"
+	"github.com/khaos-star/marvel/Config"
+	"github.com/khaos-star/marvel/Log"
+	"github.com/khaos-star/marvel/Mysql/Gorm"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"time"
 )
