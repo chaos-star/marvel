@@ -1,4 +1,4 @@
-module marvel
+module github.com/khaos-star/marvel
 
 go 1.18
 
