@@ -4,6 +4,7 @@ import (
 	"github.com/khaos-star/marvel/Config"
 	"github.com/khaos-star/marvel/Log"
 	"github.com/khaos-star/marvel/Mysql/Gorm"
+	etcd "github.com/khaos-star/marvel/Etcd"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"time"
 )
@@ -61,6 +62,16 @@ func Initialize() error {
 	if Conf.IsSet("mysql"){
 		MysqlConf := Conf.GetConfig("mysql")
 		Mysql,err = Gorm.Initialize(MysqlConf)
+		if err != nil{
+			return err
+		}
+	}
+
+	//如果配置存在则初始化Etcd
+
+	if Conf.IsSet("etcd"){
+		EtcdConf := Conf.GetStringMap("etcd")
+		Etcd,err = etcd.Initialize(EtcdConf)
 		if err != nil{
 			return err
 		}
