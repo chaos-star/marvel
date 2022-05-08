@@ -24,8 +24,14 @@ func Initialize(config map[string]interface{}) (*Engine, error) {
 		return nil, errors.New("the ETCD configuration is missing")
 	}
 
-	if val, ok := config["endpoints"].([]string); ok {
-		points = val
+	if val, ok := config["endpoints"].([]interface{}); ok {
+		if len(val) > 0 {
+			for _, item := range val {
+				if sVal, is := item.(string); is {
+					points = append(points, sVal)
+				}
+			}
+		}
 	}
 
 	if val, ok := config["username"].(string); ok {
