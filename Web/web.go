@@ -11,9 +11,20 @@ type Web struct {
 	port int64
 }
 
-func Initialize(port int64, log Log.ILogger) *Web {
+func Initialize(port int64, log Log.ILogger, env string) *Web {
 	gin.DisableConsoleColor()
 	gin.DefaultWriter = log.GetOutput()
+	if env == "prod" || env == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+	if env == "test" {
+		gin.SetMode(gin.TestMode)
+	}
+
+	if env == "debug" {
+		gin.SetMode(gin.DebugMode)
+	}
+
 	return &Web{
 		gin.Default(),
 		port,
