@@ -7,6 +7,7 @@ import (
 	"github.com/chaos-star/marvel/Log"
 	"github.com/chaos-star/marvel/Mysql/Gorm"
 	srv "github.com/chaos-star/marvel/Server"
+	Web2 "github.com/chaos-star/marvel/Web"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"time"
 )
@@ -70,7 +71,6 @@ func init() {
 				options = append(options, rotatelogs.WithRotationSize(cRotationSize.(int64)*1024*1024))
 			}
 		}
-
 		err, Logger = Log.Initialize(path, name, options...)
 		if err != nil {
 			return
@@ -98,6 +98,10 @@ func init() {
 
 	if Etcd != nil && int(sysConf["port"].(int64)) > 0 {
 		Server = srv.Initialize(Etcd, int(sysConf["port"].(int64)), sysConf["prefix"].(string))
+	}
+
+	if int(sysConf["web_port"].(int64)) > 0 {
+		Web = Web2.Initialize(sysConf["web_port"].(int64), Logger)
 	}
 
 	return

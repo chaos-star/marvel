@@ -4,11 +4,13 @@ import (
 	"context"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/sirupsen/logrus"
+	"io"
 	"runtime"
 	"time"
 )
 
 type Logger struct {
+	*logrus.Logger
 }
 
 func Initialize(path string, pattern string, options ...rotatelogs.Option) (error, ILogger) {
@@ -28,7 +30,7 @@ func Initialize(path string, pattern string, options ...rotatelogs.Option) (erro
 	}
 	formater.TimestampFormat = "2006-01-02 15:04:05 Z07:00"
 
-	log := logrus.New()
+	log := &Logger{logrus.New()}
 	log.Formatter = &formater
 	log.Out = writer
 	log.SetReportCaller(true)
@@ -36,7 +38,12 @@ func Initialize(path string, pattern string, options ...rotatelogs.Option) (erro
 	return nil, log
 }
 
+func (l *Logger) GetOutput() io.Writer {
+	return l.Out
+}
+
 type ILogger interface {
+	GetOutput() io.Writer
 	WithField(key string, value interface{}) *logrus.Entry
 	WithFields(fields logrus.Fields) *logrus.Entry
 	WithError(err error) *logrus.Entry

@@ -7,6 +7,7 @@ import (
 	"github.com/chaos-star/marvel/Log"
 	"github.com/chaos-star/marvel/Mysql/Gorm"
 	Srv "github.com/chaos-star/marvel/Server"
+	Web2 "github.com/chaos-star/marvel/Web"
 )
 
 var (
@@ -16,4 +17,5 @@ var (
 	Etcd   *etcd.Engine
 	Env    *Env2.Env
 	Server *Srv.RpcServer
+	Web    *Web2.Web
 )
