@@ -11,24 +11,39 @@ type Web struct {
 	port int64
 }
 
-func Initialize(port int64, log Log.ILogger, env string) *Web {
+func Initialize(port int64, log Log.ILogger, env string, trusted []string) *Web {
 	gin.DisableConsoleColor()
+	useEnv := gin.DebugMode
 	gin.SetMode(gin.DebugMode)
 	if env == "prod" || env == "production" {
-		gin.DefaultWriter = log.GetOutput()
-		gin.SetMode(gin.ReleaseMode)
+		useEnv = gin.ReleaseMode
 	}
 	if env == "test" {
+		useEnv = gin.TestMode
+	}
+
+	gin.SetMode(useEnv)
+	router := gin.Default()
+	switch useEnv {
+	case gin.ReleaseMode:
 		gin.DefaultWriter = log.GetOutput()
-		gin.SetMode(gin.TestMode)
+		if len(trusted) > 0 {
+			router.SetTrustedProxies(trusted)
+		}
+	case gin.TestMode:
+		gin.DefaultWriter = log.GetOutput()
+	case gin.DebugMode:
+
 	}
 
 	return &Web{
-		gin.Default(),
+		router,
 		port,
 	}
 }
 
 func (w *Web) RunServer() {
-	w.Run(fmt.Sprintf(":%d", w.port))
+	addr := fmt.Sprintf(":%d", w.port)
+	fmt.Println(fmt.Sprintf("%s Running...", addr))
+	w.Run(addr)
 }

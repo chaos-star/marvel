@@ -28,10 +28,6 @@ func init() {
 	//检测系统日志初始化环境变量
 	if Conf.IsSet("system") {
 		sysConf = Conf.GetStringMap("system")
-		if _, ok := sysConf["port"]; !ok {
-			panic("loss")
-		}
-
 	} else {
 		panic(" system configuration loss")
 	}
@@ -96,12 +92,21 @@ func init() {
 		}
 	}
 
-	if Etcd != nil && int(sysConf["port"].(int64)) > 0 {
-		Server = srv.Initialize(Etcd, int(sysConf["port"].(int64)), sysConf["prefix"].(string))
+	if Etcd != nil {
+		if _, ok := sysConf["port"]; !ok {
+			panic("loss rpc port")
+		}
+		if int(sysConf["port"].(int64)) > 0 {
+			Server = srv.Initialize(Etcd, int(sysConf["port"].(int64)), sysConf["prefix"].(string))
+		}
 	}
 
-	if int(sysConf["web_port"].(int64)) > 0 {
-		Web = Web2.Initialize(sysConf["web_port"].(int64), Logger, sysConf["env"].(string))
+	if HttpPort, ok := sysConf["http_port"]; ok && int(HttpPort.(int64)) > 0 {
+		var trustedProxies []string
+		if tps, has := sysConf["http_trusted_proxy"]; has {
+			trustedProxies = tps.([]string)
+		}
+		Web = Web2.Initialize(HttpPort.(int64), Logger, sysConf["env"].(string), trustedProxies)
 	}
 
 	return
