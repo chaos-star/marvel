@@ -3,8 +3,8 @@ package marvel
 import (
 	"fmt"
 	"github.com/chaos-star/marvel/Config"
+	"github.com/chaos-star/marvel/CronJob"
 	etcd "github.com/chaos-star/marvel/Etcd"
-	"github.com/chaos-star/marvel/Job"
 	"github.com/chaos-star/marvel/Log"
 	"github.com/chaos-star/marvel/Mysql/Gorm"
 	srv "github.com/chaos-star/marvel/Server"
@@ -107,7 +107,7 @@ func init() {
 		Web = Web2.Initialize(HttpPort.(int64), Logger, sysConf["env"].(string), trustedProxies)
 	}
 
-	Cron = Job.Initialize()
+	Cron = CronJob.Initialize()
 
 	return
 }
