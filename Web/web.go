@@ -8,7 +8,8 @@ import (
 
 type Web struct {
 	*gin.Engine
-	port int64
+	port     int64
+	safeCidr []string
 }
 
 func Initialize(port int64, log Log.ILogger, env string, trusted []string) *Web {
@@ -29,11 +30,12 @@ func Initialize(port int64, log Log.ILogger, env string, trusted []string) *Web 
 	return &Web{
 		router,
 		port,
+		trusted,
 	}
 }
 
 func (w *Web) RunServer() {
 	addr := fmt.Sprintf(":%d", w.port)
-	fmt.Println(fmt.Sprintf("%s Running...", addr))
+	fmt.Println(fmt.Sprintf("Trusted CIDR:%#v Port: %s Running...", w.safeCidr, addr))
 	w.Run(addr)
 }
