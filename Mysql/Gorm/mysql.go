@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/plugin/dbresolver"
+	"log"
+	"os"
 	"time"
 )
 
@@ -45,17 +48,26 @@ func Initialize(mysqlConfigs interface{}) (*Engine, error) {
 
 	if v, ok := mysqlConfigs.([]interface{}); ok {
 		if len(v) > 0 {
-			for _,iv := range v {
+			for _, iv := range v {
 				if ivm, is := iv.(map[string]interface{}); is {
-					mcs = append(mcs,ivm)
+					mcs = append(mcs, ivm)
 				}
 			}
 		}
 	}
 
 	if len(mcs) > 0 {
+		newLogger := logger.New(
+			log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+			logger.Config{
+				SlowThreshold:             time.Millisecond * 200, // Slow SQL threshold
+				LogLevel:                  logger.Info,            // Log level
+				IgnoreRecordNotFoundError: false,                  // Ignore ErrRecordNotFound error for logger
+				Colorful:                  true,                   // Disable color
+			},
+		)
 		for _, mc := range mcs {
-			db, err := newDB(mc)
+			db, err := newDB(mc, newLogger)
 			if err != nil {
 				return nil, err
 			}
@@ -69,15 +81,16 @@ func Initialize(mysqlConfigs interface{}) (*Engine, error) {
 	return &Engine{dbs}, nil
 }
 
-func newDB(conf map[string]interface{}) (*gorm.DB, error) {
+func newDB(conf map[string]interface{}, iLog logger.Interface) (*gorm.DB, error) {
 	mc, err := parseDBConfig(conf)
 	if err != nil {
 		return nil, err
 	}
-	return initDB(mc)
+
+	return initDB(mc, iLog)
 }
 
-func initDB(conf *mysqlConfig) (*gorm.DB, error) {
+func initDB(conf *mysqlConfig, iLog logger.Interface) (*gorm.DB, error) {
 	db, err := gorm.Open(mysql.New(mysql.Config{
 		DSN:                       conf.dsn, // data source name, refer https://github.com/go-sql-driver/mysql#dsn-data-source-name
 		DefaultStringSize:         256,      // add default size for string fields, by default, will use db type `longtext` for fields without size, not a primary key, no index defined and don't have default values
@@ -85,7 +98,9 @@ func initDB(conf *mysqlConfig) (*gorm.DB, error) {
 		DontSupportRenameIndex:    true,     // drop & create index when rename index, rename index not supported before MySQL 5.7, MariaDB
 		DontSupportRenameColumn:   true,     // use change when rename column, rename rename not supported before MySQL 8, MariaDB
 		SkipInitializeWithVersion: false,    // smart configure based on used version
-	}), &gorm.Config{})
+	}), &gorm.Config{
+		Logger: iLog,
+	})
 
 	sqlDB, err := db.DB()
 	if err != nil {
@@ -107,7 +122,7 @@ func initDB(conf *mysqlConfig) (*gorm.DB, error) {
 	if len(conf.slave) > 0 {
 		var Replicas []gorm.Dialector
 		for _, v := range conf.slave {
-			Replicas = append(Replicas, gorm.Dialector(mysql.Open(v.dsn)))
+			Replicas = append(Replicas, mysql.Open(v.dsn))
 		}
 		db.Use(dbresolver.Register(dbresolver.Config{
 			Sources:  []gorm.Dialector{mysql.Open(conf.dsn)},
@@ -183,9 +198,9 @@ func parseDBConfig(conf map[string]interface{}) (*mysqlConfig, error) {
 
 	if sc, ok := conf["slave"].([]interface{}); ok {
 		if len(sc) > 0 {
-			for _,isc := range sc {
+			for _, isc := range sc {
 				if iscm, is := isc.(map[string]interface{}); is {
-					mSlave = append(mSlave,iscm)
+					mSlave = append(mSlave, iscm)
 				}
 			}
 		}
@@ -205,7 +220,7 @@ func parseDBConfig(conf map[string]interface{}) (*mysqlConfig, error) {
 		dsn:    parseDSN(conf),
 		option: option,
 		slave:  slave,
-	} , nil
+	}, nil
 }
 
 func parseDSN(conf map[string]interface{}) string {

@@ -22,16 +22,14 @@ func Initialize(port int64, log Log.ILogger, env string, trusted []string) *Web 
 		useEnv = gin.TestMode
 	}
 
+	router := gin.Default()
 	gin.SetMode(useEnv)
 	switch useEnv {
 	case gin.ReleaseMode:
-		gin.DefaultWriter = log.GetOutput()
 	case gin.TestMode:
-		gin.DefaultWriter = log.GetOutput()
 	case gin.DebugMode:
-
 	}
-	router := gin.Default()
+
 	if len(trusted) > 0 {
 		router.SetTrustedProxies(trusted)
 	}
