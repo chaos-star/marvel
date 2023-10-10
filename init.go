@@ -94,11 +94,11 @@ func init() {
 	}
 
 	if Etcd != nil {
-		if _, ok := sysConf["port"]; !ok {
+		if _, ok := sysConf["rpc_port"]; !ok {
 			panic("loss rpc port")
 		}
-		if int(sysConf["port"].(int64)) > 0 {
-			Server = srv.Initialize(Etcd, int(sysConf["port"].(int64)), sysConf["prefix"].(string))
+		if int(sysConf["rpc_port"].(int64)) > 0 {
+			Server = srv.Initialize(Etcd, int(sysConf["rpc_port"].(int64)), sysConf["prefix"].(string))
 		}
 	}
 
