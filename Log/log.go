@@ -27,10 +27,10 @@ func Initialize(path string, pattern string, options ...rotatelogs.Option) (erro
 	//}
 	formatter := &logrus.JSONFormatter{
 		FieldMap: logrus.FieldMap{
-			logrus.FieldKeyTime:  "@timestamp",
-			logrus.FieldKeyLevel: "@level",
-			logrus.FieldKeyMsg:   "@message",
-			logrus.FieldKeyFunc:  "@caller",
+			logrus.FieldKeyTime:  "create_time",
+			logrus.FieldKeyLevel: "level",
+			logrus.FieldKeyMsg:   "message",
+			logrus.FieldKeyFunc:  "function",
 		},
 	}
 	formatter.CallerPrettyfier = func(frame *runtime.Frame) (function string, file string) {
