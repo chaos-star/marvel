@@ -102,10 +102,7 @@ func init() {
 	}
 
 	if HttpPort, ok := sysConf["http_port"]; ok && int(HttpPort.(int64)) > 0 {
-		var trustedProxies []string
-		if tps, has := sysConf["http_trusted_proxy"]; has {
-			trustedProxies = tps.([]string)
-		}
+		var trustedProxies = Conf.GetStringSlice("system.http_trusted_proxy")
 		Web = Web2.Initialize(HttpPort.(int64), Logger, sysConf["env"].(string), trustedProxies)
 	}
 
