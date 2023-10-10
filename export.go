@@ -19,5 +19,5 @@ var (
 	Env    *Env2.Env
 	Server *Srv.RpcServer
 	Web    *Web2.Web
-	Cron   *CronJob.Job
+	Cron   *CronJob.CronJob
 )
