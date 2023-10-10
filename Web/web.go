@@ -14,16 +14,14 @@ type Web struct {
 func Initialize(port int64, log Log.ILogger, env string, trusted []string) *Web {
 	gin.DisableConsoleColor()
 	useEnv := gin.DebugMode
-	gin.SetMode(gin.DebugMode)
 	if env == "prod" || env == "production" {
 		useEnv = gin.ReleaseMode
 	}
 	if env == "test" {
 		useEnv = gin.TestMode
 	}
-
-	router := gin.Default()
 	gin.SetMode(useEnv)
+	router := gin.Default()
 	switch useEnv {
 	case gin.ReleaseMode:
 	case gin.TestMode:
