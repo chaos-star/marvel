@@ -19,19 +19,27 @@ func Initialize(path string, pattern string, options ...rotatelogs.Option) (erro
 	logInfo.SetPath(path)
 	writer := logInfo.NewWriter(options...)
 
-	formater := logrus.JSONFormatter{
+	//formater := logrus.JSONFormatter{
+	//	FieldMap: logrus.FieldMap{
+	//		logrus.FieldKeyLevel: "level",
+	//		logrus.FieldKeyTime:  "timestamp",
+	//	},
+	//}
+	formatter := &logrus.JSONFormatter{
 		FieldMap: logrus.FieldMap{
-			logrus.FieldKeyLevel: "level",
-			logrus.FieldKeyTime:  "timestamp",
+			logrus.FieldKeyTime:  "@timestamp",
+			logrus.FieldKeyLevel: "@level",
+			logrus.FieldKeyMsg:   "@message",
+			logrus.FieldKeyFunc:  "@caller",
 		},
 	}
-	formater.CallerPrettyfier = func(frame *runtime.Frame) (function string, file string) {
+	formatter.CallerPrettyfier = func(frame *runtime.Frame) (function string, file string) {
 		return frame.Function, frame.File
 	}
-	formater.TimestampFormat = "2006-01-02 15:04:05 Z07:00"
+	formatter.TimestampFormat = "2006-01-02 15:04:05 Z07:00"
 
 	log := &Logger{logrus.New()}
-	log.Formatter = &formater
+	log.Formatter = formatter
 	log.Out = writer
 	log.SetReportCaller(true)
 
