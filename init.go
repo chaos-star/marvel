@@ -101,7 +101,7 @@ func init() {
 	}
 
 	if int(sysConf["web_port"].(int64)) > 0 {
-		Web = Web2.Initialize(sysConf["web_port"].(int64), Logger)
+		Web = Web2.Initialize(sysConf["web_port"].(int64), Logger, sysConf["env"].(string))
 	}
 
 	return

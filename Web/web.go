@@ -14,15 +14,12 @@ type Web struct {
 func Initialize(port int64, log Log.ILogger, env string) *Web {
 	gin.DisableConsoleColor()
 	gin.DefaultWriter = log.GetOutput()
+	gin.SetMode(gin.DebugMode)
 	if env == "prod" || env == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	if env == "test" {
 		gin.SetMode(gin.TestMode)
-	}
-
-	if env == "debug" {
-		gin.SetMode(gin.DebugMode)
 	}
 
 	return &Web{
