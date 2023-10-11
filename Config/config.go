@@ -16,13 +16,13 @@ type Config struct {
 	config *viper.Viper
 }
 
-func Initialize() (error,*Config) {
+func Initialize() (error, *Config) {
 	var err error
 	once.Do(func() {
-		err,config = New("./conf","app","toml")
+		err, config = New("./Conf", "app", "toml")
 	})
-	if err != nil{
-		return err,nil
+	if err != nil {
+		return err, nil
 	}
 	return err, config
 }
@@ -33,12 +33,11 @@ func New(filepath string, filename string, filetype string) (error, *Config) {
 	viper.SetConfigName(filename)
 	viper.SetConfigType(filetype)
 	err := viper.ReadInConfig()
-	if err != nil{
-		return err,nil
+	if err != nil {
+		return err, nil
 	}
 	return err, &Config{viper}
 }
-
 
 func (cfg *Config) SetConfigFile(filepath string, filename string, filetype string) error {
 	cfg.config.AddConfigPath(filepath)
