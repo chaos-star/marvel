@@ -34,6 +34,17 @@ func Initialize(port int64, log Log.ILogger, env string, trusted []string) *Web 
 	}
 }
 
+type IGroupRouter interface {
+	Router(group *gin.RouterGroup)
+}
+
+func (w *Web) LoadRouterGroup(prefix string, routers []IGroupRouter, handlers ...gin.HandlerFunc) {
+	group := w.Group(prefix, handlers...)
+	for _, router := range routers {
+		router.Router(group)
+	}
+}
+
 func (w *Web) RunServer() {
 	addr := fmt.Sprintf(":%d", w.port)
 	fmt.Println(fmt.Sprintf("Trusted CIDR:%#v Port: %s Running...", w.safeCidr, addr))
