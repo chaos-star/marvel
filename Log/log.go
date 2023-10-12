@@ -30,7 +30,8 @@ func Initialize(path string, pattern string, options ...rotatelogs.Option) (erro
 			logrus.FieldKeyTime:  "create_time",
 			logrus.FieldKeyLevel: "level",
 			logrus.FieldKeyMsg:   "message",
-			logrus.FieldKeyFunc:  "function",
+			logrus.FieldKeyFunc:  "method",
+			logrus.FieldKeyFile:  "path",
 		},
 	}
 	formatter.CallerPrettyfier = func(frame *runtime.Frame) (function string, file string) {
