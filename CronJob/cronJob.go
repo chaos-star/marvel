@@ -1,6 +1,10 @@
 package CronJob
 
-import "github.com/robfig/cron/v3"
+import (
+	"fmt"
+	"github.com/robfig/cron/v3"
+	"strings"
+)
 
 type CronJob struct {
 	jobs map[string]SpecJob
@@ -10,6 +14,7 @@ type CronJob struct {
 type SpecJob struct {
 	Spec string
 	Cmd  cron.Job
+	Desc string
 }
 
 func (cj *CronJob) JoinJobs(jobs map[string]SpecJob) {
@@ -24,6 +29,28 @@ func (cj *CronJob) GetJob(name string) *SpecJob {
 		pJob = &job
 	}
 	return pJob
+}
+
+func (cj *CronJob) GetJobs() []*SpecJob {
+	var pJobs []*SpecJob
+	for index, _ := range cj.jobs {
+		job := cj.jobs[index]
+		pJobs = append(pJobs, &job)
+	}
+	return pJobs
+}
+
+func (cj *CronJob) Usage() {
+	var (
+		i   int
+		msg strings.Builder
+	)
+	msg.WriteString(fmt.Sprintf("\033[1m%-5s %-20s %-30s\033[0m\r\n", "index", "command", "description"))
+	for index, item := range cj.jobs {
+		i++
+		msg.WriteString(fmt.Sprintf("\033[36m%-5s\033[0m \033[32m%-20s\033[0m %-30s\r\n", fmt.Sprintf("%d.", i), index, item.Desc))
+	}
+	fmt.Println(msg.String())
 }
 
 func Initialize() *CronJob {
