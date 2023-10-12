@@ -40,11 +40,17 @@ func (cj *CronJob) GetJobs() []*SpecJob {
 	return pJobs
 }
 
-func (cj *CronJob) Usage() {
+func (cj *CronJob) Usage(tips ...string) {
 	var (
 		i   int
 		msg strings.Builder
 	)
+	if len(tips) > 0 {
+		for _, tip := range tips {
+			msg.WriteString(fmt.Sprintf("%s\r\n", tip))
+		}
+		msg.WriteString("\r\n")
+	}
 	msg.WriteString(fmt.Sprintf("\033[1m%-5s %-20s %-30s\033[0m\r\n", "index", "command", "description"))
 	for index, item := range cj.jobs {
 		i++
