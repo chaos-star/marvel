@@ -84,6 +84,7 @@ func Initialize(mysqlConfigs interface{}) (*Engine, error) {
 func newDB(conf map[string]interface{}, iLog logger.Interface) (*gorm.DB, error) {
 	mc, err := parseDBConfig(conf)
 	if err != nil {
+		panic(err)
 		return nil, err
 	}
 
@@ -210,6 +211,7 @@ func parseDBConfig(conf map[string]interface{}) (*mysqlConfig, error) {
 		for _, msc := range mSlave {
 			s, err := parseDBConfig(msc)
 			if err != nil {
+				panic(err)
 				return nil, err
 			}
 			slave = append(slave, s)

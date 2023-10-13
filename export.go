@@ -6,6 +6,7 @@ import (
 	Env2 "github.com/chaos-star/marvel/Env"
 	etcd "github.com/chaos-star/marvel/Etcd"
 	"github.com/chaos-star/marvel/Log"
+	"github.com/chaos-star/marvel/Mq"
 	"github.com/chaos-star/marvel/Mysql/Gorm"
 	Srv "github.com/chaos-star/marvel/Server"
 	Web2 "github.com/chaos-star/marvel/Web"
@@ -20,4 +21,5 @@ var (
 	Server *Srv.RpcServer
 	Web    *Web2.Web
 	Cron   *CronJob.CronJob
+	MQ     *Mq.Mq
 )

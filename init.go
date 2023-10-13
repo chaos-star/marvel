@@ -6,6 +6,7 @@ import (
 	"github.com/chaos-star/marvel/CronJob"
 	etcd "github.com/chaos-star/marvel/Etcd"
 	"github.com/chaos-star/marvel/Log"
+	"github.com/chaos-star/marvel/Mq"
 	"github.com/chaos-star/marvel/Mysql/Gorm"
 	srv "github.com/chaos-star/marvel/Server"
 	Web2 "github.com/chaos-star/marvel/Web"
@@ -78,6 +79,15 @@ func init() {
 	if Conf.IsSet("mysql") {
 		MysqlConf := Conf.GetConfig("mysql")
 		Mysql, err = Gorm.Initialize(MysqlConf)
+		if err != nil {
+			return
+		}
+	}
+
+	//如果配置存在则初始化Mysql
+	if Conf.IsSet("rabbitmq") {
+		MqConf := Conf.GetConfig("rabbitmq")
+		MQ, err = Mq.Initialize(MqConf, Logger)
 		if err != nil {
 			return
 		}

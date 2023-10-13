@@ -51,8 +51,13 @@ func (l *Logger) GetOutput() io.Writer {
 	return l.Out
 }
 
+func (l *Logger) GetLog() *logrus.Logger {
+	return l.Logger
+}
+
 type ILogger interface {
 	GetOutput() io.Writer
+	GetLog() *logrus.Logger
 	WithField(key string, value interface{}) *logrus.Entry
 	WithFields(fields logrus.Fields) *logrus.Entry
 	WithError(err error) *logrus.Entry
