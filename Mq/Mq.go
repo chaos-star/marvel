@@ -126,8 +126,8 @@ func parseMqConfig(conf map[string]interface{}) (*mqConfig, error) {
 	}
 
 	if port, ok := conf["port"]; ok {
-		if val, is := port.(int); is && val > 0 {
-			mc.Port = val
+		if val, is := port.(int64); is && val > 0 {
+			mc.Port = int(val)
 		} else {
 			return nil, errors.New("the data type of port is incorrect or empty")
 		}
