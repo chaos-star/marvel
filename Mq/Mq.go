@@ -49,6 +49,7 @@ func Initialize(mqConfigs interface{}, logger mate.Logger) (*Mq, error) {
 	}
 
 	var mqInst Mq
+	mqInst.MqRabbits = make(map[string]*mate.Rabbit)
 	mqInst.MqBase = new(mate.MQBase).With(logger)
 	for _, mc := range mcs {
 		mConf, err := parseMqConfig(mc)
