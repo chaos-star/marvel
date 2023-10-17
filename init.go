@@ -5,6 +5,7 @@ import (
 	"github.com/chaos-star/marvel/Config"
 	"github.com/chaos-star/marvel/CronJob"
 	etcd "github.com/chaos-star/marvel/Etcd"
+	"github.com/chaos-star/marvel/HttpClient"
 	"github.com/chaos-star/marvel/Log"
 	"github.com/chaos-star/marvel/Mq"
 	"github.com/chaos-star/marvel/Mysql/Gorm"
@@ -75,6 +76,7 @@ func init() {
 		}
 	}
 
+	HttpTool = HttpClient.Initialize(Logger)
 	//如果配置存在则初始化Mysql
 	if Conf.IsSet("mysql") {
 		MysqlConf := Conf.GetConfig("mysql")
