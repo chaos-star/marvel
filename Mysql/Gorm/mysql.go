@@ -22,6 +22,9 @@ func (e *Engine) DB(name string) *gorm.DB {
 	}
 	return nil
 }
+func (e *Engine) DbMap() map[string]*gorm.DB {
+	return e.db
+}
 
 type mysqlOption struct {
 	charset     string
