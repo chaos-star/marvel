@@ -8,14 +8,19 @@ type Cache struct {
 
 func Initialize(config map[string]interface{}) *Cache {
 	var (
-		address string
-		passwd  string
-		db      int64
+		address  string
+		username string
+		passwd   string
+		db       int64
 	)
 	if addr, ok := config["address"].(string); ok {
 		address = addr
 	} else {
 		panic("redis address exception")
+	}
+
+	if name, ok := config["username"].(string); ok {
+		username = name
 	}
 
 	if pwd, ok := config["password"].(string); ok {
@@ -28,6 +33,7 @@ func Initialize(config map[string]interface{}) *Cache {
 	return &Cache{
 		redis.NewClient(&redis.Options{
 			Addr:     address,
+			Username: username,
 			Password: passwd,
 			DB:       int(db),
 		}),
