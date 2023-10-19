@@ -1,6 +1,7 @@
 package Cache
 
 import (
+	"context"
 	"errors"
 	"github.com/redis/go-redis/v9"
 )
@@ -75,10 +76,16 @@ func (c *Cache) newRedis(config map[string]interface{}) (*redis.Client, string, 
 	if cdb, ok := config["db"].(int64); ok {
 		db = cdb
 	}
-	return redis.NewClient(&redis.Options{
+
+	client := redis.NewClient(&redis.Options{
 		Addr:     address,
 		Username: username,
 		Password: passwd,
 		DB:       int(db),
-	}), alias, nil
+	})
+	_, err := client.Ping(context.TODO()).Result()
+	if err != nil {
+		panic(err)
+	}
+	return client, alias, nil
 }

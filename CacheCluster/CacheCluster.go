@@ -1,6 +1,7 @@
 package CacheCluster
 
 import (
+	"context"
 	"errors"
 	"github.com/redis/go-redis/v9"
 )
@@ -73,9 +74,16 @@ func (c *Cluster) newCluster(config map[string]interface{}) (*redis.ClusterClien
 		passwd = pwd
 	}
 
-	return redis.NewClusterClient(&redis.ClusterOptions{
+	cluster := redis.NewClusterClient(&redis.ClusterOptions{
 		Addrs:    address,
 		Username: username,
 		Password: passwd,
-	}), alias, nil
+	})
+
+	_, err := cluster.Ping(context.TODO()).Result()
+	if err != nil {
+		panic(err)
+	}
+
+	return cluster, alias, nil
 }
