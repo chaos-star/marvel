@@ -76,6 +76,7 @@ func init() {
 		if err != nil {
 			return
 		}
+		fmt.Println("Logger Initialize [\033[32mSuccess\033[0m]")
 	}
 
 	HttpTool = HttpClient.Initialize(Logger)
@@ -86,6 +87,7 @@ func init() {
 		if err != nil {
 			return
 		}
+		fmt.Println("Mysql Initialize Success")
 	}
 
 	//如果配置存在则初始化Redis
@@ -95,6 +97,7 @@ func init() {
 		if err != nil {
 			panic(err)
 		}
+		fmt.Println("Redis Initialize Success")
 	}
 
 	//如果配置存在则初始化Redis
@@ -104,6 +107,7 @@ func init() {
 		if err != nil {
 			panic(err)
 		}
+		fmt.Println("Redis Cluster Initialize Success")
 	}
 
 	//如果配置存在则初始化Rabbitmq
@@ -113,6 +117,7 @@ func init() {
 		if err != nil {
 			panic(err)
 		}
+		fmt.Println("Rabbit MQ Initialize Success")
 	}
 
 	//如果配置存在则初始化Etcd
@@ -123,6 +128,7 @@ func init() {
 		if err != nil {
 			panic(err)
 		}
+		fmt.Println("Etcd Initialize Success")
 	}
 
 	if Etcd != nil {
@@ -131,15 +137,18 @@ func init() {
 		}
 		if int(sysConf["rpc_port"].(int64)) > 0 {
 			Server = srv.Initialize(Etcd, int(sysConf["rpc_port"].(int64)), sysConf["prefix"].(string))
+			fmt.Println("Rpc Server Initialize Success")
 		}
 	}
 
 	if HttpPort, ok := sysConf["http_port"]; ok && int(HttpPort.(int64)) > 0 {
 		var trustedProxies = Conf.GetStringSlice("system.http_trusted_proxy")
 		Web = Web2.Initialize(HttpPort.(int64), Logger, sysConf["env"].(string), trustedProxies)
+		fmt.Println("Web Server Initialize Success")
 	}
 
 	Cron = CronJob.Initialize()
+	fmt.Println("Cron Server Initialize Success")
 
 	return
 }
