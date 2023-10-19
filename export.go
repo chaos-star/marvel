@@ -1,6 +1,8 @@
 package marvel
 
 import (
+	"github.com/chaos-star/marvel/Cache"
+	"github.com/chaos-star/marvel/CacheCluster"
 	"github.com/chaos-star/marvel/Config"
 	"github.com/chaos-star/marvel/CronJob"
 	Env2 "github.com/chaos-star/marvel/Env"
@@ -14,14 +16,16 @@ import (
 )
 
 var (
-	Conf     *Config.Config
-	Logger   Log.ILogger
-	Mysql    *Gorm.Engine
-	Etcd     *etcd.Engine
-	Env      *Env2.Env
-	Server   *Srv.RpcServer
-	Web      *Web2.Web
-	Cron     *CronJob.CronJob
-	MQ       *Mq.Mq
-	HttpTool *HttpClient.HttpClient
+	Conf         *Config.Config
+	Logger       Log.ILogger
+	Mysql        *Gorm.Engine
+	Etcd         *etcd.Engine
+	Env          *Env2.Env
+	Server       *Srv.RpcServer
+	Web          *Web2.Web
+	Cron         *CronJob.CronJob
+	MQ           *Mq.Mq
+	HttpTool     *HttpClient.HttpClient
+	Redis        *Cache.Cache
+	RedisCluster *CacheCluster.Cluster
 )

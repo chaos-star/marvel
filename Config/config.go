@@ -34,7 +34,7 @@ func New(filepath string, filename string, filetype string) (error, *Config) {
 	viper.SetConfigType(filetype)
 	err := viper.ReadInConfig()
 	if err != nil {
-		return err, nil
+		panic(err)
 	}
 	return err, &Config{viper}
 }

@@ -27,7 +27,7 @@ type mqConfig struct {
 	MaxIdle     int    `json:"maxIdle"`
 	MaxLifeTime int    `json:"maxLifeTime"`
 	TimeOut     int    `json:"timeout"`
-	VHost       string `json:"vhost""`
+	VHost       string `json:"vhost"`
 }
 
 func Initialize(mqConfigs interface{}, logger mate.Logger) (*Mq, error) {
@@ -109,11 +109,7 @@ func parseMqConfig(conf map[string]interface{}) (*mqConfig, error) {
 	if passwd, ok := conf["password"]; ok {
 		if val, is := passwd.(string); is && val != "" {
 			mc.Password = val
-		} else {
-			return nil, errors.New("the data type of password is incorrect or empty")
 		}
-	} else {
-		return nil, errors.New("password is not exists")
 	}
 
 	if vhost, ok := conf["vhost"]; ok {

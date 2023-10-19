@@ -3,6 +3,7 @@ package Etcd
 import (
 	"context"
 	"errors"
+	"fmt"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc/resolver"
 	"time"
@@ -18,7 +19,7 @@ func Initialize(config map[string]interface{}) (*Engine, error) {
 		username         string
 		password         string
 		timeout          int64 = 5
-		keepAlive        int64
+		keepAlive        int64 = 10
 		keepAliveTimeout int64
 	)
 
@@ -34,6 +35,8 @@ func Initialize(config map[string]interface{}) (*Engine, error) {
 				}
 			}
 		}
+	} else {
+		return nil, errors.New("etcd endpoints exception")
 	}
 
 	if val, ok := config["username"].(string); ok {
@@ -71,32 +74,34 @@ func Initialize(config map[string]interface{}) (*Engine, error) {
 		//客户端等待keep-alive探测响应的时间。如果在此时间内没有收到响应，则关闭连接。
 		DialKeepAliveTimeout: time.Duration(keepAliveTimeout) * time.Second,
 	})
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("init etcd exception:%s", err.Error()))
+	}
 
 	return &Engine{cli}, err
 }
 
-
-func (x *Engine) NewGrpcServiceDiscovery(schema string,service string) resolver.Builder  {
-	return &etcdGrpcDiscoveryService{client: x.Client,schema: schema,service: service}
+func (x *Engine) NewGrpcServiceDiscovery(schema string, service string) resolver.Builder {
+	return &etcdGrpcDiscoveryService{client: x.Client, schema: schema, service: service}
 }
 
 // RegisterService 注册服务
-func (x *Engine) RegisterService(key,value string, expire int64, on bool)(*etcdRegisterService, error)  {
+func (x *Engine) RegisterService(key, value string, expire int64, on bool) (*etcdRegisterService, error) {
 	srv := &etcdRegisterService{
 		client: x.Client,
-		ctx: context.Background(),
+		ctx:    context.Background(),
 	}
 	err := srv.createLease(expire)
-	if err != nil{
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
-	err = srv.BindLease(key,value)
-	if err != nil{
-		return nil,err
+	err = srv.BindLease(key, value)
+	if err != nil {
+		return nil, err
 	}
 	err = srv.KeepAlive(on)
-	if err != nil{
-		return nil,err
+	if err != nil {
+		return nil, err
 	}
 	return srv, nil
 }

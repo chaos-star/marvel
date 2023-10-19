@@ -22,6 +22,12 @@ func (e *Engine) DB(name string) *gorm.DB {
 	}
 	return nil
 }
+func (e *Engine) Instance(name string) *gorm.DB {
+	if db, ok := e.db[name]; ok {
+		return db
+	}
+	return nil
+}
 func (e *Engine) DbMap() map[string]*gorm.DB {
 	return e.db
 }
@@ -87,7 +93,6 @@ func Initialize(mysqlConfigs interface{}) (*Engine, error) {
 func newDB(conf map[string]interface{}, iLog logger.Interface) (*gorm.DB, error) {
 	mc, err := parseDBConfig(conf)
 	if err != nil {
-		panic(err)
 		return nil, err
 	}
 
@@ -128,26 +133,29 @@ func initDB(conf *mysqlConfig, iLog logger.Interface) (*gorm.DB, error) {
 		for _, v := range conf.slave {
 			Replicas = append(Replicas, mysql.Open(v.dsn))
 		}
-		db.Use(dbresolver.Register(dbresolver.Config{
+		err = db.Use(dbresolver.Register(dbresolver.Config{
 			Sources:  []gorm.Dialector{mysql.Open(conf.dsn)},
 			Replicas: Replicas,
 			Policy:   dbresolver.RandomPolicy{},
 		}))
+		if err != nil {
+			return nil, err
+		}
 	}
 	return db, err
 }
 
 func parseDBConfig(conf map[string]interface{}) (*mysqlConfig, error) {
-	if conf["host"] == nil {
+	if conf["host"] == nil || conf["host"] == "" {
 		return nil, errors.New("host is not found")
 	}
-	if conf["username"] == nil {
+	if conf["username"] == nil || conf["username"] == "" {
 		return nil, errors.New("username is not found")
 	}
-	if conf["password"] == nil {
+	if conf["password"] == nil || conf["password"] == "" {
 		return nil, errors.New("password is not found")
 	}
-	if conf["database"] == nil {
+	if conf["database"] == nil || conf["database"] == "" {
 		return nil, errors.New("database is not found")
 	}
 	var (
@@ -214,7 +222,6 @@ func parseDBConfig(conf map[string]interface{}) (*mysqlConfig, error) {
 		for _, msc := range mSlave {
 			s, err := parseDBConfig(msc)
 			if err != nil {
-				panic(err)
 				return nil, err
 			}
 			slave = append(slave, s)

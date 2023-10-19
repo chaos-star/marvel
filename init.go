@@ -2,6 +2,8 @@ package marvel
 
 import (
 	"fmt"
+	"github.com/chaos-star/marvel/Cache"
+	"github.com/chaos-star/marvel/CacheCluster"
 	"github.com/chaos-star/marvel/Config"
 	"github.com/chaos-star/marvel/CronJob"
 	etcd "github.com/chaos-star/marvel/Etcd"
@@ -86,12 +88,30 @@ func init() {
 		}
 	}
 
-	//如果配置存在则初始化Mysql
+	//如果配置存在则初始化Redis
+	if Conf.IsSet("redis") {
+		RedisConf := Conf.GetConfig("redis")
+		Redis, err = Cache.Initialize(RedisConf)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	//如果配置存在则初始化Redis
+	if Conf.IsSet("redis_cluster") {
+		RedisConf := Conf.GetConfig("redis_cluster")
+		RedisCluster, err = CacheCluster.Initialize(RedisConf)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	//如果配置存在则初始化Rabbitmq
 	if Conf.IsSet("rabbitmq") {
 		MqConf := Conf.GetConfig("rabbitmq")
 		MQ, err = Mq.Initialize(MqConf, Logger)
 		if err != nil {
-			return
+			panic(err)
 		}
 	}
 
@@ -101,7 +121,7 @@ func init() {
 		EtcdConf := Conf.GetStringMap("etcd")
 		Etcd, err = etcd.Initialize(EtcdConf)
 		if err != nil {
-			return
+			panic(err)
 		}
 	}
 
