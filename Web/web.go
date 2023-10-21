@@ -24,7 +24,10 @@ func Initialize(port int64, log Log.ILogger, env string, trusted []string) *Web 
 	gin.SetMode(useEnv)
 	router := gin.Default()
 	if len(trusted) > 0 {
-		router.SetTrustedProxies(trusted)
+		err := router.SetTrustedProxies(trusted)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	return &Web{
@@ -47,6 +50,9 @@ func (w *Web) LoadRouterGroup(prefix string, routers []IGroupRouter, handlers ..
 
 func (w *Web) RunServer() {
 	addr := fmt.Sprintf(":%d", w.port)
+	err := w.Run(addr)
+	if err != nil {
+		panic(err)
+	}
 	fmt.Println(fmt.Sprintf("Trusted CIDR:%#v Port: %s Running...", w.safeCidr, addr))
-	w.Run(addr)
 }
