@@ -1,35 +1,33 @@
 package Env
 
-import "errors"
+import "strings"
 
 const (
-	DeployEnvDev  = "Development"
-	DeployEnvTest = "Test"
-	DeployEnvPre  = "Preview"
-	DeployEnvProd = "Production"
+	DeployEnvDebug = "debug"
+	DeployEnvTest  = "test"
+	DeployEnvProd  = "production"
 )
 
 type Env struct {
 	appEnv string
 }
 
-func Initialize(env string) (error, *Env) {
+func Initialize(env string) *Env {
+	env = strings.ToLower(env)
 	envInst := &Env{}
 	envInst.appEnv = env
 	if envInst.appEnv == "" {
-		envInst.appEnv = DeployEnvDev
+		envInst.appEnv = DeployEnvDebug
 	}
 	switch envInst.appEnv {
 	case DeployEnvProd:
 		fallthrough
-	case DeployEnvPre:
-		fallthrough
 	case DeployEnvTest:
 		fallthrough
-	case DeployEnvDev:
-		return nil, envInst
+	case DeployEnvDebug:
+		return envInst
 	}
-	return errors.New("unknown environment the default will be the development"), nil
+	return envInst
 }
 
 func (e *Env) GetEnv() string {

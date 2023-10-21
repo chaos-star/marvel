@@ -6,6 +6,7 @@ import (
 	"github.com/chaos-star/marvel/CacheCluster"
 	"github.com/chaos-star/marvel/Config"
 	"github.com/chaos-star/marvel/CronJob"
+	Env2 "github.com/chaos-star/marvel/Env"
 	etcd "github.com/chaos-star/marvel/Etcd"
 	"github.com/chaos-star/marvel/HttpClient"
 	"github.com/chaos-star/marvel/Log"
@@ -14,6 +15,7 @@ import (
 	srv "github.com/chaos-star/marvel/Server"
 	Web2 "github.com/chaos-star/marvel/Web"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"os"
 	"time"
 )
 
@@ -35,6 +37,18 @@ func init() {
 	//检测系统日志初始化环境变量
 	if Conf.IsSet("system") {
 		sysConf = Conf.GetStringMap("system")
+		var (
+			OsEnvName = sysConf["environment_system_variable"].(string)
+			OsEnv     string
+		)
+		if OsEnvName == "" {
+			OsEnv = sysConf["env"].(string)
+		} else {
+			OsEnv = os.Getenv(OsEnvName)
+		}
+
+		Env = Env2.Initialize(OsEnv)
+
 	} else {
 		panic(" system configuration loss")
 	}
@@ -145,7 +159,8 @@ func init() {
 
 	if HttpPort, ok := sysConf["http_port"]; ok && int(HttpPort.(int64)) > 0 {
 		var trustedProxies = Conf.GetStringSlice("system.http_trusted_proxy")
-		Web = Web2.Initialize(HttpPort.(int64), Logger, sysConf["env"].(string), trustedProxies)
+		_env := Env.GetEnv()
+		Web = Web2.Initialize(HttpPort.(int64), Logger, _env, trustedProxies)
 		fmt.Println("Web Server Initialize [\033[32mSuccess\033[0m]")
 	}
 

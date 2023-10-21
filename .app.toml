@@ -7,6 +7,8 @@ http_port = 8088
 http_trusted_proxy = ["127.0.0.1"]
 # timeout  unit:second
 http_timeout = 60
+# the priority is higher than env
+environment_system_variable = "OCEAN_ENV"
 # prod、test、debug
 env = "debug"
 

@@ -34,11 +34,11 @@ func Initialize(path string, pattern string, options ...rotatelogs.Option) (erro
 			logrus.FieldKeyFile:  "path",
 		},
 	}
+
 	formatter.CallerPrettyfier = func(frame *runtime.Frame) (function string, file string) {
 		return frame.Function, frame.File
 	}
 	formatter.TimestampFormat = "2006-01-02 15:04:05 Z07:00"
-
 	log := &Logger{logrus.New()}
 	log.Formatter = formatter
 	log.Out = writer
@@ -51,13 +51,19 @@ func (l *Logger) GetOutput() io.Writer {
 	return l.Out
 }
 
-func (l *Logger) GetLog() *logrus.Logger {
+func (l *Logger) GetLogger() *logrus.Logger {
 	return l.Logger
+}
+
+func (l *Logger) SetFormatter(formatter logrus.Formatter) ILogger {
+	l.Logger.SetFormatter(formatter)
+	return l
 }
 
 type ILogger interface {
 	GetOutput() io.Writer
-	GetLog() *logrus.Logger
+	GetLogger() *logrus.Logger
+	SetFormatter(formatter logrus.Formatter) ILogger
 	WithField(key string, value interface{}) *logrus.Entry
 	WithFields(fields logrus.Fields) *logrus.Entry
 	WithError(err error) *logrus.Entry
