@@ -59,16 +59,31 @@ host = "127.0.0.1:3306"
 username = "root"
 password = "123456"
 database = "db-master"
+# unit minite
+max_life_time = 60
+max_idle_time = 15
+max_open = 100
+max_idle = 10
 [[mysql.slave]]
 host = "127.0.0.1:3306"
 username = "root"
 password = "123456"
 database = "db-slave1"
+# unit minite
+max_life_time = 60
+max_idle_time = 15
+max_open = 100
+max_idle = 10
 [[mysql.slave]]
 host = "127.0.0.1:3306"
 username = "root"
 password = "123456"
 database = "db-slave2"
+# unit minite
+max_life_time = 60
+max_idle_time = 15
+max_open = 100
+max_idle = 10
 
 [[mysql]]
 alias = "db2-alias"
@@ -76,8 +91,18 @@ host = "127.0.0.1:3306"
 username = "root"
 password = "123456"
 database = "db2-master"
+# unit minite
+max_life_time = 60
+max_idle_time = 15
+max_open = 100
+max_idle = 10
 [[mysql.slave]]
 host = "127.0.0.1:3306"
 username = "root"
 password = "123456"
 database = "db2-slave1"
+# unit minite
+max_life_time = 60
+max_idle_time = 15
+max_open = 100
+max_idle = 10
