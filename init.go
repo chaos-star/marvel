@@ -38,13 +38,19 @@ func init() {
 	if Conf.IsSet("system") {
 		sysConf = Conf.GetStringMap("system")
 		var (
-			OsEnvName = sysConf["environment_system_variable"].(string)
+			OsEnvName string
 			OsEnv     string
+			ok        bool
 		)
-		if OsEnvName == "" {
-			OsEnv = sysConf["env"].(string)
-		} else {
+
+		if OsEnvName, ok = sysConf["environment_system_variable"].(string); ok && OsEnvName != "" {
 			OsEnv = os.Getenv(OsEnvName)
+		}
+
+		if OsEnv == "" {
+			if OsEnv, ok = sysConf["env"].(string); !ok {
+				OsEnv = ""
+			}
 		}
 
 		Env = Env2.Initialize(OsEnv)
