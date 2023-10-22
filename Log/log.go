@@ -39,7 +39,6 @@ func Initialize(path string, pattern string, options ...rotatelogs.Option) (erro
 	log := &Logger{logrus.New()}
 	log.Formatter = formatter
 	log.Out = writer
-	log.SetReportCaller(true)
 
 	return nil, log
 }
