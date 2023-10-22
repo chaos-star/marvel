@@ -2,9 +2,11 @@ package Log
 
 import (
 	"context"
+	"fmt"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/sirupsen/logrus"
 	"io"
+	"runtime"
 	"time"
 )
 
@@ -29,15 +31,18 @@ func Initialize(path string, pattern string, options ...rotatelogs.Option) (erro
 			logrus.FieldKeyTime:  "create_time",
 			logrus.FieldKeyLevel: "level",
 			logrus.FieldKeyMsg:   "message",
+			logrus.FieldKeyFile:  "path",
+			logrus.FieldKeyFunc:  "method",
 		},
 	}
 
-	//formatter.CallerPrettyfier = func(frame *runtime.Frame) (function string, file string) {
-	//	return frame.Function, fmt.Sprintf("%s:%d", frame.File, frame.Line)
-	//}
+	formatter.CallerPrettyfier = func(frame *runtime.Frame) (function string, file string) {
+		return frame.Function, fmt.Sprintf("%s:%d", frame.File, frame.Line)
+	}
 	formatter.TimestampFormat = "2006-01-02 15:04:05 Z07:00"
 	log := &Logger{logrus.New()}
 	log.Formatter = formatter
+	log.SetReportCaller(true)
 	log.Out = writer
 
 	return nil, log
