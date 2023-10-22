@@ -29,8 +29,6 @@ func Initialize(path string, pattern string, options ...rotatelogs.Option) (erro
 			logrus.FieldKeyTime:  "create_time",
 			logrus.FieldKeyLevel: "level",
 			logrus.FieldKeyMsg:   "message",
-			logrus.FieldKeyFunc:  "method",
-			logrus.FieldKeyFile:  "path",
 		},
 	}
 
