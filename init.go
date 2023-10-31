@@ -104,7 +104,7 @@ func init() {
 	HttpTool = HttpClient.Initialize(Logger)
 	//如果配置存在则初始化Mysql
 	if Conf.IsSet("mysql") {
-		MysqlConf := Conf.GetConfig("mysql")
+		MysqlConf := Conf.Get("mysql")
 		Mysql, err = Gorm.Initialize(MysqlConf)
 		if err != nil {
 			return
@@ -114,7 +114,7 @@ func init() {
 
 	//如果配置存在则初始化Redis
 	if Conf.IsSet("redis") {
-		RedisConf := Conf.GetConfig("redis")
+		RedisConf := Conf.Get("redis")
 		Redis, err = Cache.Initialize(RedisConf)
 		if err != nil {
 			panic(err)
@@ -124,7 +124,7 @@ func init() {
 
 	//如果配置存在则初始化Redis
 	if Conf.IsSet("redis_cluster") {
-		RedisConf := Conf.GetConfig("redis_cluster")
+		RedisConf := Conf.Get("redis_cluster")
 		RedisCluster, err = CacheCluster.Initialize(RedisConf)
 		if err != nil {
 			panic(err)
@@ -134,7 +134,7 @@ func init() {
 
 	//如果配置存在则初始化Rabbitmq
 	if Conf.IsSet("rabbitmq") {
-		MqConf := Conf.GetConfig("rabbitmq")
+		MqConf := Conf.Get("rabbitmq")
 		MQ, err = Mq.Initialize(MqConf, Logger)
 		if err != nil {
 			panic(err)
