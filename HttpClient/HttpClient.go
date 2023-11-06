@@ -62,6 +62,11 @@ func (r *Request) Bind(paramType SendParamType, params interface{}) (err error, 
 		}
 
 		if paramType == Json || paramType == Bytes {
+			reflect.TypeOf(body)
+			r.Body = io.NopCloser(bytes.NewReader(body))
+		}
+
+		if paramType == Bytes {
 			r.Body = io.NopCloser(bytes.NewReader(body))
 		}
 	}
@@ -78,16 +83,13 @@ func (r *Request) Send(response interface{}, isParse bool) (err error, state int
 	reqLog := fmt.Sprintf("Url:%s | Method:%s | Header:%s | Params:%s", r.URL.String(), r.Method, string(headerBody), string(r.params))
 	r.log.Info(fmt.Sprintf("[HTTP_SEND_REQUEST] %s", reqLog))
 	resp, err := client.Do(r.Request)
-	errMsg := "nil"
-	respData, _ := io.ReadAll(resp.Body)
 	if err != nil {
-		errMsg = err.Error()
-	}
-	state = resp.StatusCode
-	r.log.Info(fmt.Sprintf("[HTTP_SEND_RESPONSE] %s | Error:%s | HttpStatus:%d | Response:%s", reqLog, errMsg, state, string(respData)))
-	if err != nil {
+		r.log.Info(fmt.Sprintf("[HTTP_SEND_RESPONSE] [Exception] %s | Error:%s ", reqLog, err.Error()))
 		return
 	}
+	respData, _ := io.ReadAll(resp.Body)
+	state = resp.StatusCode
+	r.log.Info(fmt.Sprintf("[HTTP_SEND_RESPONSE] %s | HttpStatus:%d | Response:%s", reqLog, state, string(respData)))
 	if isParse {
 		err = json.Unmarshal(respData, response)
 		if err != nil {
