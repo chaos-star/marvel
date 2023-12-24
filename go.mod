@@ -3,7 +3,7 @@ module github.com/chaos-star/marvel
 go 1.20
 
 require (
-	github.com/chaos-star/queue-mate v1.0.7
+	github.com/chaos-star/queue-mate v1.0.8
 	github.com/gin-gonic/gin v1.9.1
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
