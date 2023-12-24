@@ -33,13 +33,13 @@ func init() {
 	}
 	var (
 		sysConf map[string]interface{}
+		OsEnv   string
 	)
 	//检测系统日志初始化环境变量
 	if Conf.IsSet("system") {
 		sysConf = Conf.GetStringMap("system")
 		var (
 			OsEnvName string
-			OsEnv     string
 			ok        bool
 		)
 
@@ -94,7 +94,7 @@ func init() {
 				options = append(options, rotatelogs.WithRotationSize(cRotationSize.(int64)*1024*1024))
 			}
 		}
-		err, Logger = Log.Initialize(path, name, options...)
+		err, Logger = Log.Initialize(OsEnv, path, name, options...)
 		if err != nil {
 			return
 		}

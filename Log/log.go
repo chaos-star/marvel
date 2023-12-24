@@ -6,6 +6,7 @@ import (
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/sirupsen/logrus"
 	"io"
+	"os"
 	"runtime"
 	"time"
 )
@@ -14,7 +15,7 @@ type Logger struct {
 	*logrus.Logger
 }
 
-func Initialize(path string, pattern string, options ...rotatelogs.Option) (error, ILogger) {
+func Initialize(env string, path string, pattern string, options ...rotatelogs.Option) (error, ILogger) {
 	var logInfo LoggerInfo = &DefaultLoggerInfo{}
 	logInfo.SetName(pattern, nil)
 	logInfo.SetPath(path)
@@ -44,6 +45,9 @@ func Initialize(path string, pattern string, options ...rotatelogs.Option) (erro
 	log.Formatter = formatter
 	log.SetReportCaller(true)
 	log.Out = writer
+	if env == "debug" {
+		log.Out = os.Stderr
+	}
 
 	return nil, log
 }
