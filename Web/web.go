@@ -41,6 +41,19 @@ type IGroupRouter interface {
 	Router(group *gin.RouterGroup)
 }
 
+type Groups struct {
+	*gin.RouterGroup
+}
+
+func (w *Web) NewGroupRouter(prefix string, handlers ...gin.HandlerFunc) *Groups {
+	return &Groups{w.Group(prefix, handlers...)}
+}
+func (g *Groups) Add(routers ...IGroupRouter) {
+	for _, router := range routers {
+		router.Router(g.RouterGroup)
+	}
+}
+
 func (w *Web) LoadRouterGroup(prefix string, routers []IGroupRouter, handlers ...gin.HandlerFunc) {
 	group := w.Group(prefix, handlers...)
 	for _, router := range routers {
