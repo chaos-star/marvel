@@ -25,8 +25,8 @@ type mqConfig struct {
 	Username    string `json:"username"`
 	Password    string `json:"password"`
 	MaxIdle     int    `json:"maxIdle"`
-	MaxLifeTime int    `json:"maxLifeTime"`
-	TimeOut     int    `json:"timeout"`
+	MaxLifeTime int64  `json:"maxLifeTime"`
+	TimeOut     int64  `json:"timeout"`
 	VHost       string `json:"vhost"`
 }
 
@@ -133,19 +133,19 @@ func parseMqConfig(conf map[string]interface{}) (*mqConfig, error) {
 	}
 
 	if timeOut, ok := conf["timeout"]; ok {
-		if val, is := timeOut.(int); is && val > 0 {
+		if val, is := timeOut.(int64); is && val > 0 {
 			mc.TimeOut = val
 		}
 	}
 
 	if maxIdle, ok := conf["maxIdle"]; ok {
-		if val, is := maxIdle.(int); is && val > 0 {
-			mc.MaxIdle = val
+		if val, is := maxIdle.(int64); is && val > 0 {
+			mc.MaxIdle = int(val)
 		}
 	}
 
 	if maxLifeTime, ok := conf["maxLifeTime"]; ok {
-		if val, is := maxLifeTime.(int); is && val > 0 {
+		if val, is := maxLifeTime.(int64); is && val > 0 {
 			mc.MaxLifeTime = val
 		}
 	}
