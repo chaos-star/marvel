@@ -138,13 +138,13 @@ func parseMqConfig(conf map[string]interface{}) (*mqConfig, error) {
 		}
 	}
 
-	if maxIdle, ok := conf["maxIdle"]; ok {
+	if maxIdle, ok := conf["maxidle"]; ok {
 		if val, is := maxIdle.(int64); is && val > 0 {
 			mc.MaxIdle = int(val)
 		}
 	}
 
-	if maxLifeTime, ok := conf["maxLifeTime"]; ok {
+	if maxLifeTime, ok := conf["maxlifetime"]; ok {
 		if val, is := maxLifeTime.(int64); is && val > 0 {
 			mc.MaxLifeTime = val
 		}
