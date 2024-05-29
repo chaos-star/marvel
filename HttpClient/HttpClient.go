@@ -87,6 +87,7 @@ func (r *Request) Send(response interface{}, isParse bool) (err error, state int
 		r.log.Info(fmt.Sprintf("[HTTP_SEND_RESPONSE] [Exception] %s | Error:%s ", reqLog, err.Error()))
 		return
 	}
+	defer resp.Body.Close()
 	respData, _ := io.ReadAll(resp.Body)
 	state = resp.StatusCode
 	r.log.Info(fmt.Sprintf("[HTTP_SEND_RESPONSE] %s | HttpStatus:%d | Response:%s", reqLog, state, string(respData)))
