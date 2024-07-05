@@ -19,6 +19,8 @@ import (
 	"time"
 )
 
+const EnvName = "ARTEMIS_APP_ENV"
+
 func init() {
 	var err error
 	defer func() {
@@ -35,21 +37,20 @@ func init() {
 		sysConf map[string]interface{}
 		OsEnv   string
 	)
+	OsEnv = os.Getenv(EnvName)
 	//检测系统日志初始化环境变量
 	if Conf.IsSet("system") {
 		sysConf = Conf.GetStringMap("system")
 		var (
-			OsEnvName string
-			ok        bool
+			confEnv interface{}
+			env     string
+			ok      bool
 		)
-
-		if OsEnvName, ok = sysConf["environment_system_variable"].(string); ok && OsEnvName != "" {
-			OsEnv = os.Getenv(OsEnvName)
-		}
-
 		if OsEnv == "" {
-			if OsEnv, ok = sysConf["env"].(string); !ok {
-				OsEnv = ""
+			if confEnv, ok = sysConf["env"]; ok {
+				if env, ok = confEnv.(string); ok {
+					OsEnv = env
+				}
 			}
 		}
 
@@ -105,7 +106,7 @@ func init() {
 	//如果配置存在则初始化Mysql
 	if Conf.IsSet("mysql") {
 		MysqlConf := Conf.Get("mysql")
-		Mysql, err = Gorm.Initialize(MysqlConf, Logger)
+		Mysql, err = Gorm.Initialize(OsEnv, MysqlConf, Logger)
 		if err != nil {
 			return
 		}

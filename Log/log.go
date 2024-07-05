@@ -3,6 +3,7 @@ package Log
 import (
 	"context"
 	"fmt"
+	"github.com/chaos-star/marvel/Env"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/sirupsen/logrus"
 	"io"
@@ -45,7 +46,7 @@ func Initialize(env string, path string, pattern string, options ...rotatelogs.O
 	log.Formatter = formatter
 	log.SetReportCaller(true)
 	log.Out = writer
-	if env == "debug" {
+	if env == Env.DeployEnvDebug {
 		log.Out = os.Stderr
 	}
 

@@ -2,6 +2,7 @@ package Config
 
 import (
 	"github.com/spf13/viper"
+	"os"
 	"sync"
 )
 
@@ -14,10 +15,16 @@ type Config struct {
 	*viper.Viper
 }
 
+const EnvConfPath = "ARTEMIS_CONFIG_PATH"
+
 func Initialize() (error, *Config) {
 	var err error
 	once.Do(func() {
-		err, config = New("./Conf", "app", "toml")
+		path := os.Getenv(EnvConfPath)
+		if path == "" {
+			path = "./Conf"
+		}
+		err, config = New(path, "app", "toml")
 	})
 	if err != nil {
 		return err, nil

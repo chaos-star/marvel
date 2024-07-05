@@ -3,11 +3,14 @@ package Gorm
 import (
 	"errors"
 	"fmt"
+	"github.com/chaos-star/marvel/Env"
 	"github.com/chaos-star/marvel/Log"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/plugin/dbresolver"
+	"log"
+	"os"
 	"time"
 )
 
@@ -32,6 +35,7 @@ func (e *Engine) DbMap() map[string]*gorm.DB {
 }
 
 type mysqlOption struct {
+	dbLog       bool
 	charset     string
 	maxIdleConn int
 	maxOpenConn int
@@ -45,7 +49,7 @@ type mysqlConfig struct {
 	slave  []*mysqlConfig
 }
 
-func Initialize(mysqlConfigs interface{}, log Log.ILogger) (*Engine, error) {
+func Initialize(env string, mysqlConfigs interface{}, mLog Log.ILogger) (*Engine, error) {
 	var (
 		dbs = make(map[string]*gorm.DB)
 		mcs []map[string]interface{}
@@ -65,17 +69,8 @@ func Initialize(mysqlConfigs interface{}, log Log.ILogger) (*Engine, error) {
 	}
 
 	if len(mcs) > 0 {
-		newLogger := logger.New(
-			log, // io writer
-			logger.Config{
-				SlowThreshold:             time.Millisecond * 200, // Slow SQL threshold
-				LogLevel:                  logger.Info,            // Log level
-				IgnoreRecordNotFoundError: false,                  // Ignore ErrRecordNotFound error for logger
-				Colorful:                  false,                  // Disable color
-			},
-		)
 		for _, mc := range mcs {
-			db, err := newDB(mc, newLogger)
+			db, err := newDB(env, mc, mLog)
 			if err != nil {
 				return nil, err
 			}
@@ -89,13 +84,35 @@ func Initialize(mysqlConfigs interface{}, log Log.ILogger) (*Engine, error) {
 	return &Engine{dbs}, nil
 }
 
-func newDB(conf map[string]interface{}, iLog logger.Interface) (*gorm.DB, error) {
+func newDB(env string, conf map[string]interface{}, iLog Log.ILogger) (*gorm.DB, error) {
 	mc, err := parseDBConfig(conf)
 	if err != nil {
 		return nil, err
 	}
+	var newLogger logger.Interface
+	if mc.option.dbLog && env != Env.DeployEnvProd && env != Env.DeployEnvDebug {
+		newLogger = logger.New(
+			iLog,
+			logger.Config{
+				SlowThreshold:             time.Millisecond * 20, // Slow SQL threshold
+				LogLevel:                  logger.Info,           // Log level
+				IgnoreRecordNotFoundError: false,                 // Ignore ErrRecordNotFound error for logger
+				Colorful:                  false,                 // Disable color
+			},
+		)
+	} else {
+		newLogger = logger.New(
+			log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+			logger.Config{
+				SlowThreshold:             time.Millisecond * 200, // Slow SQL threshold
+				LogLevel:                  logger.Info,            // Log level
+				IgnoreRecordNotFoundError: false,                  // Ignore ErrRecordNotFound error for logger
+				Colorful:                  true,                   // Disable color
+			},
+		)
+	}
 
-	return initDB(mc, iLog)
+	return initDB(mc, newLogger)
 }
 
 func initDB(conf *mysqlConfig, iLog logger.Interface) (*gorm.DB, error) {
@@ -197,11 +214,17 @@ func parseDBConfig(conf map[string]interface{}) (*mysqlConfig, error) {
 			option.charset = val
 		}
 	}
+	if dbLog, ok := conf["db_log"]; ok {
+		if val, is := dbLog.(bool); is {
+			option.dbLog = val
+		}
+	}
 	conf["max_open"] = option.maxOpenConn
 	conf["max_idle"] = option.maxIdleConn
 	conf["max_life_time"] = option.maxLifetime
 	conf["max_idle_time"] = option.maxIdleTime
 	conf["charset"] = option.charset
+	conf["db_log"] = option.dbLog
 
 	if sc, ok := conf["slave"].(map[string]interface{}); ok {
 		mSlave = append(mSlave, sc)

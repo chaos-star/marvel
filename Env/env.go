@@ -3,9 +3,10 @@ package Env
 import "strings"
 
 const (
-	DeployEnvDebug = "debug"
-	DeployEnvTest  = "test"
-	DeployEnvProd  = "production"
+	DeployEnvDebug  = "debug"
+	DeployEnvTest   = "test"
+	DeployEnvProd   = "production"
+	DeployEnvSimula = "simulation"
 )
 
 type Env struct {
