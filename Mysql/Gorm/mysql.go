@@ -3,12 +3,11 @@ package Gorm
 import (
 	"errors"
 	"fmt"
+	"github.com/chaos-star/marvel/Log"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/plugin/dbresolver"
-	"log"
-	"os"
 	"time"
 )
 
@@ -46,7 +45,7 @@ type mysqlConfig struct {
 	slave  []*mysqlConfig
 }
 
-func Initialize(mysqlConfigs interface{}) (*Engine, error) {
+func Initialize(mysqlConfigs interface{}, log Log.ILogger) (*Engine, error) {
 	var (
 		dbs = make(map[string]*gorm.DB)
 		mcs []map[string]interface{}
@@ -67,7 +66,7 @@ func Initialize(mysqlConfigs interface{}) (*Engine, error) {
 
 	if len(mcs) > 0 {
 		newLogger := logger.New(
-			log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+			log,
 			logger.Config{
 				SlowThreshold:             time.Millisecond * 200, // Slow SQL threshold
 				LogLevel:                  logger.Info,            // Log level
