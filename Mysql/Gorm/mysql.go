@@ -71,7 +71,7 @@ func Initialize(mysqlConfigs interface{}, log Log.ILogger) (*Engine, error) {
 				SlowThreshold:             time.Millisecond * 200, // Slow SQL threshold
 				LogLevel:                  logger.Info,            // Log level
 				IgnoreRecordNotFoundError: false,                  // Ignore ErrRecordNotFound error for logger
-				Colorful:                  true,                   // Disable color
+				Colorful:                  false,                  // Disable color
 			},
 		)
 		for _, mc := range mcs {
