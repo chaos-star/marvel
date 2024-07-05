@@ -105,7 +105,7 @@ func init() {
 	//如果配置存在则初始化Mysql
 	if Conf.IsSet("mysql") {
 		MysqlConf := Conf.Get("mysql")
-		Mysql, err = Gorm.Initialize(MysqlConf)
+		Mysql, err = Gorm.Initialize(MysqlConf, Logger)
 		if err != nil {
 			return
 		}
