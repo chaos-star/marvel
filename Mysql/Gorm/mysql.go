@@ -97,7 +97,7 @@ func newDB(env string, conf map[string]interface{}, iLog Log.ILogger) (*gorm.DB,
 				SlowThreshold:             time.Millisecond * 20, // Slow SQL threshold
 				LogLevel:                  logger.Info,           // Log level
 				IgnoreRecordNotFoundError: false,                 // Ignore ErrRecordNotFound error for logger
-				Colorful:                  false,                 // Disable color
+				Colorful:                  true,                  // Disable color
 			},
 		)
 	} else {

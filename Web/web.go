@@ -2,6 +2,7 @@ package Web
 
 import (
 	"fmt"
+	"github.com/chaos-star/marvel/Env"
 	"github.com/chaos-star/marvel/Log"
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +16,7 @@ type Web struct {
 func Initialize(port int64, log Log.ILogger, env string, trusted []string) *Web {
 	gin.DisableConsoleColor()
 	useEnv := gin.DebugMode
-	if env == "prod" || env == "production" {
+	if env == "prod" || env == Env.DeployEnvProd || env == Env.DeployEnvSimula {
 		useEnv = gin.ReleaseMode
 	}
 	if env == "test" {
