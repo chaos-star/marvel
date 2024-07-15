@@ -5,7 +5,7 @@ import "strings"
 const (
 	DeployEnvDebug  = "debug"
 	DeployEnvTest   = "test"
-	DeployEnvProd   = "production"
+	DeployEnvProd   = "prod"
 	DeployEnvSimula = "simulation"
 )
 
