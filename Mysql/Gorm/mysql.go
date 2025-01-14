@@ -236,6 +236,6 @@ func parseDBConfig(conf map[string]interface{}) (*mysqlConfig, error) {
 }
 
 func parseDSN(conf map[string]interface{}) string {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=%s&parseTime=True&loc=Local", conf["username"], conf["password"], conf["host"], conf["database"], conf["charset"])
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=%s&parseTime=True&loc=Local&allowNativePasswords=true&interpolateParams=true", conf["username"], conf["password"], conf["host"], conf["database"], conf["charset"])
 	return dsn
 }
