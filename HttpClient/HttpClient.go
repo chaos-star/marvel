@@ -246,3 +246,7 @@ func (r *Request) parse(paramType SendParamType, prefix string, params interface
 	}
 	return
 }
+
+func (r *Request) SetLog(log Log.ILogger) {
+	r.log = log
+}
