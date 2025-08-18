@@ -1,40 +1,55 @@
 package Config
 
 import (
-	"github.com/spf13/viper"
+	"bytes"
 	"sync"
+
+	"github.com/spf13/viper"
 )
 
 var (
-	once   sync.Once
-	config *Config
+	once    sync.Once
+	xLoader Loading
 )
 
 type Config struct {
 	*viper.Viper
+	loader Loading
 }
 
-func Initialize() (error, *Config) {
-	var err error
+func SetLoader(loader Loading) {
+	xLoader = loader
+}
+func Initialize() (err error, config *Config) {
 	once.Do(func() {
-		err, config = New("./Conf", "app", "toml")
+		if xLoader == nil {
+			err, config = NewConfig(&DefaultLoading{})
+		} else {
+			err, config = NewConfig(xLoader)
+		}
 	})
 	if err != nil {
-		return err, nil
+		return
 	}
-	return err, config
+	return
 }
 
-func New(filepath string, filename string, filetype string) (error, *Config) {
-	viper := viper.New()
-	viper.AddConfigPath(filepath)
-	viper.SetConfigName(filename)
-	viper.SetConfigType(filetype)
-	err := viper.ReadInConfig()
+func NewConfig(load Loading) (err error, config *Config) {
+	var (
+		viper = viper.New()
+		body  []byte
+	)
+	viper.SetConfigType("toml")
+	err, body = load.Load()
 	if err != nil {
-		panic(err)
+		return
 	}
-	return err, &Config{viper}
+	err = viper.ReadConfig(bytes.NewReader(body))
+	if err != nil {
+		return
+	}
+	config = &Config{viper, load}
+	return
 }
 
 func (cfg *Config) SetConfigFile(filepath string, filename string, filetype string) error {
@@ -43,4 +58,13 @@ func (cfg *Config) SetConfigFile(filepath string, filename string, filetype stri
 	cfg.SetConfigType(filetype)
 	err := cfg.ReadInConfig()
 	return err
+}
+func (cfg *Config) Refresh() (err error) {
+	var body []byte
+	err, body = cfg.loader.Load()
+	err = cfg.Viper.ReadConfig(bytes.NewReader(body))
+	if err != nil {
+		return
+	}
+	return
 }

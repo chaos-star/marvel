@@ -2,6 +2,9 @@ package marvel
 
 import (
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/chaos-star/marvel/Cache"
 	"github.com/chaos-star/marvel/CacheCluster"
 	"github.com/chaos-star/marvel/Config"
@@ -15,11 +18,9 @@ import (
 	srv "github.com/chaos-star/marvel/Server"
 	Web2 "github.com/chaos-star/marvel/Web"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
-	"os"
-	"time"
 )
 
-func init() {
+func Initialize() {
 	var err error
 	defer func() {
 		if err != nil {
@@ -31,6 +32,7 @@ func init() {
 		panic(err)
 		return
 	}
+
 	var (
 		sysConf map[string]interface{}
 		OsEnv   string
@@ -173,4 +175,8 @@ func init() {
 	Cron = CronJob.Initialize()
 
 	return
+}
+
+func SetLoader(loader Config.Loading) {
+	Config.SetLoader(loader)
 }
